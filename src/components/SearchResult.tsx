@@ -213,7 +213,17 @@ export default function SearchResult({ users }: any) {
         </div>
         <div className="flex justify-between items-center">
           <span className="text-default-400 text-small">
-            Total {users.length} users
+            Total {users.length} addresses
+          </span>
+          <span className="text-default-400 text-small">
+            Claimable{"  "}
+            <strong>
+              {users.reduce(
+                (accumulator: number, currentValue: any) =>
+                  accumulator + parseInt(currentValue.amount),
+                0
+              )}{" "}
+            </strong>
           </span>
           <label className="flex items-center text-default-400 text-small">
             Rows per page:

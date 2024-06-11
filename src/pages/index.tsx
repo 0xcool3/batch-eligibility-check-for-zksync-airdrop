@@ -136,7 +136,7 @@ export default function IndexPage() {
                   }
                   title={item.title}
                 >
-                  {item.content}
+                  <div dangerouslySetInnerHTML={{ __html: item.content }} />
                 </AccordionItem>
               ))}
             </Accordion>
