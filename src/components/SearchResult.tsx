@@ -216,7 +216,7 @@ export default function SearchResult({ users }: any) {
             Total {users.length} addresses
           </span>
           <span className="text-default-400 text-small">
-            Claimable{"  "}
+            Claimable $ZK{"  "}
             <strong>
               {users.reduce(
                 (accumulator: number, currentValue: any) =>
@@ -225,6 +225,7 @@ export default function SearchResult({ users }: any) {
               )}{" "}
             </strong>
           </span>
+
           <label className="flex items-center text-default-400 text-small">
             Rows per page:
             <select
