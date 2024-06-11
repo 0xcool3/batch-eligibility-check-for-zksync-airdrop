@@ -60,24 +60,29 @@ export default function IndexPage() {
             isLoading={btnBusy}
             color="primary"
             onClick={async () => {
-              setBtnBusy(true);
-              console.log("setBtn busy");
-              const isExisted = await checkDBExisted();
-              if (!isExisted) {
-                // await downloadData();
-                console.log("before startDownload");
-                await startDownload(
-                  "/eligibility_list.csv",
-                  (loaded: number, total: number, title: "") => {
-                    // console.log({ loaded, total });
-                    updateProgress({ loaded, total, title });
-                  }
-                );
-              }
+              try {
+                setBtnBusy(true);
+                console.log("setBtn busy");
+                const isExisted = await checkDBExisted();
+                if (!isExisted) {
+                  // await downloadData();
+                  console.log("before startDownload");
+                  await startDownload(
+                    "/eligibility_list.csv",
+                    (loaded: number, total: number, title: "") => {
+                      // console.log({ loaded, total });
+                      updateProgress({ loaded, total, title });
+                    }
+                  );
+                }
 
-              const results: any = await checkEligible(value.split("\n"));
-              setUsers(results);
-              setBtnBusy(false);
+                const results: any = await checkEligible(value.split("\n"));
+                setUsers(results);
+                setBtnBusy(false);
+              } catch (e) {
+                console.error(e);
+                setBtnBusy(false);
+              }
             }}
           >
             Query

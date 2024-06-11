@@ -2,6 +2,7 @@ import { bytesToString } from "viem";
 import * as Papa from "papaparse";
 // import Dexie, { type EntityTable } from "dexie";
 import { db } from "@/lib/db";
+import { delay } from "@/lib/delay";
 export const downloadData = async () => {
   const response = await fetch("/eligibility_list.csv");
   const csvString = await response.text();
@@ -60,6 +61,8 @@ export async function startDownload(url: string, updateProgress: Function) {
     });
   }
 
+  await delay(2000);
+
   console.log("lenght", items.length);
   try {
     console.log("start bulkadd");
@@ -74,6 +77,7 @@ export async function startDownload(url: string, updateProgress: Function) {
       }
     }, 1000);
 
+    await delay(2000);
     await db.eligibility_list.bulkPut(items);
     clearInterval(intvl);
     updateProgress(120, 120, "Indexing eligibility_list ...");
