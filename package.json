@@ -64,7 +64,6 @@
     "postcss": "^8.4.38",
     "typescript": "^5.2.2",
     "vite": "^5.2.0",
-    "vite-plugin-worker": "^1.0.5",
     "vite-tsconfig-paths": "^4.3.2"
   }
 }
