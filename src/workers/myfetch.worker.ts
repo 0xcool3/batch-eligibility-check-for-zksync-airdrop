@@ -7,12 +7,14 @@ import * as Papa from "papaparse";
 
 function myfetch(url: string) {
   const processItems = (url: string) =>
-    new Observable((subscriber:any) => {
+    new Observable((subscriber: any) => {
       (async () => {
         console.log("dosomething");
         const response = await fetch(url);
         const reader = response.body?.getReader();
-        const contentLength = response!.headers!.get("Content-Length")!;
+        const contentLength = response!.headers!.get("Content-Length")! ??
+          33126855;
+        console.log({ contentLength });
 
         let receivedLength = 0;
         let chunks = [];
