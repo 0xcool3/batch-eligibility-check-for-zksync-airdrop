@@ -6,16 +6,15 @@ import { delay } from "@/lib/delay";
 export const downloadData = async () => {
   const response = await fetch("/eligibility_list.csv");
   const csvString = await response.text();
-  console.log({ csvString });
+  console.log(csvString);
 };
 
 export async function startDownload(url: string, updateProgress: Function) {
-  console.log("before fetch");
+  console.log("before startDownload");
   const response = await fetch(url);
-  console.log("after fetch");
+  console.log("after startDownload");
   const reader = response.body?.getReader();
   const contentLength = +response!.headers!.get("Content-Length")!;
-
   console.log({ contentLength });
 
   let receivedLength = 0;
@@ -37,7 +36,11 @@ export async function startDownload(url: string, updateProgress: Function) {
       "Downloading eligibility_list.csv...",
     );
   }
-  updateProgress(1, 1, "Downloading eligibility_list.csv...");
+  updateProgress(
+    contentLength,
+    contentLength,
+    "Downloading eligibility_list.csv...",
+  );
   console.log("downloaded");
 
   const chunksAll = new Uint8Array(receivedLength);
@@ -56,12 +59,11 @@ export async function startDownload(url: string, updateProgress: Function) {
   for (var i = 1; i < results.data.length; ++i) {
     items.push({
       id: results.data[i][0],
-      userId: results.data[i][0],
       tokenAmount: results.data[i][1],
     });
   }
 
-  await delay(2000);
+  await delay(1000);
 
   console.log("lenght", items.length);
   try {
@@ -77,7 +79,7 @@ export async function startDownload(url: string, updateProgress: Function) {
       }
     }, 1000);
 
-    await delay(2000);
+    await delay(1000);
     await db.eligibility_list.bulkPut(items);
     clearInterval(intvl);
     updateProgress(120, 120, "Indexing eligibility_list ...");

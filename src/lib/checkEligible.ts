@@ -9,18 +9,8 @@ export const checkEligible = async (list: string[]) => {
   });
 
   const result = await db.eligibility_list.bulkGet(validAddresses);
-  console.log(
-    555,
-    result,
-    isAddress("0xa5cc3c03994db5b0d9a5eEdD10Cabab0813678ac", { strict: false }),
-  );
 
   let users = [];
-
-  // id: 1,
-  // address: "Tony Reichert",
-  // status: "eligible",
-  // amount: "29",
 
   for (let i = 0; i < addresses.length; i++) {
     users.push(
@@ -35,12 +25,4 @@ export const checkEligible = async (list: string[]) => {
     );
   }
   return users;
-
-  // const validAddresses = addresses.filter((address: string) => {
-  //   return isAddress(address);
-  // }).map((address) => {
-  //   return address.toLocaleLowerCase();
-  // });
-
-  // console.log({ validAddresses });
 };

@@ -70,7 +70,7 @@ export default function IndexPage() {
                   await startDownload(
                     "/eligibility_list.csv",
                     (loaded: number, total: number, title: "") => {
-                      // console.log({ loaded, total });
+                      console.log({ loaded, total, title });
                       updateProgress({ loaded, total, title });
                     }
                   );
