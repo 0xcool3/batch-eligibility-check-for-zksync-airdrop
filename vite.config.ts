@@ -8,7 +8,10 @@ export default ({ mode }: any) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) };
   return defineConfig({
     base: process.env.VITE_BASEPATH,
-    plugins: [react(), tsconfigPaths()],
+    plugins: [
+      react(),
+      tsconfigPaths(),
+    ],
 
     resolve: {
       alias: {

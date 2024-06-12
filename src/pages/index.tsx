@@ -19,6 +19,7 @@ import { Progress } from "@nextui-org/react";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import faqs from "@/components/faq";
+import { spawn, Thread, Worker } from "threads"
 
 export default function IndexPage() {
   const [btnBusy, setBtnBusy] = React.useState(false);

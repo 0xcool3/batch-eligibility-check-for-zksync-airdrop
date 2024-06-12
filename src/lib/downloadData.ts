@@ -3,6 +3,8 @@ import * as Papa from "papaparse";
 // import Dexie, { type EntityTable } from "dexie";
 import { db } from "@/lib/db";
 import { delay } from "@/lib/delay";
+import { spawn, Thread, Worker } from "threads";
+import worker from "@/workers/bulkput.worker?worker";
 export const downloadData = async () => {
   const response = await fetch("/eligibility_list.csv");
   const csvString = await response.text();
@@ -54,7 +56,7 @@ export async function startDownload(url: string, updateProgress: Function) {
 
   const results: any = Papa.parse(csvString);
 
-  const items = [];
+  const items: { id: any; tokenAmount: any }[] = [];
 
   for (var i = 1; i < results.data.length; ++i) {
     items.push({
@@ -69,20 +71,38 @@ export async function startDownload(url: string, updateProgress: Function) {
   try {
     console.log("start bulkadd");
 
-    let seconds = 0;
-    const intvl = setInterval(() => {
-      seconds++;
-      if (seconds >= 120) {
-        updateProgress(120, 120, "Indexing eligibility_list ...");
-      } else {
-        updateProgress(seconds, 120, "Indexing eligibility_list ...");
-      }
-    }, 1000);
+    // let seconds = 0;
+    // const intvl = setInterval(() => {
+    //   seconds++;
+    //   if (seconds >= 120) {
+    //     updateProgress(120, 120, "Indexing eligibility_list ...");
+    //   } else {
+    //     updateProgress(seconds, 120, "Indexing eligibility_list ...");
+    //   }
+    // }, 1000);
 
-    await delay(1000);
-    await db.eligibility_list.bulkPut(items);
-    clearInterval(intvl);
-    updateProgress(120, 120, "Indexing eligibility_list ...");
+    // await delay(1000);
+
+    const bulkPut = await spawn(new worker());
+
+    const newPromise = new Promise((resolve, reject) => {
+      bulkPut(items).subscribe((result: any) => {
+        updateProgress(
+          result.processed,
+          result.total,
+          "Indexing eligibility_list ...",
+        );
+        if (result.processed >= result.total) {
+          resolve(true);
+        }
+      });
+    });
+
+    await newPromise;
+
+    // await db.eligibility_list.bulkPut(items);
+    // clearInterval(intvl);
+    // updateProgress(120, 120, "Indexing eligibility_list ...");
     console.log("after bulkadd");
   } catch (e) {
     console.log("put", e);
