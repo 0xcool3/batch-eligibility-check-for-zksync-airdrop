@@ -7,7 +7,7 @@ function bulkput(items: any[], chunkSize = 1000) {
   const total = items.length;
   let processed = 0;
   const processItems = (items: any[], chunkSize: number) =>
-    new Observable((subscriber) => {
+    new Observable((subscriber:any) => {
       const processChunk = async (chunk: any[]) => {
         await db.eligibility_list.bulkPut(chunk);
         processed += chunk.length;

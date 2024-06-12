@@ -7,7 +7,7 @@ import * as Papa from "papaparse";
 
 function myfetch(url: string) {
   const processItems = (url: string) =>
-    new Observable((subscriber) => {
+    new Observable((subscriber:any) => {
       (async () => {
         console.log("dosomething");
         const response = await fetch(url);
