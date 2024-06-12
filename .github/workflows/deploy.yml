@@ -54,8 +54,7 @@ jobs:
             echo "Unable to determine package manager"
             exit 1
           fi
-      - name: Setup Pages
-        uses: actions/configure-pages@v4
+          
       - name: Install dependencies
         run: ${{ steps.detect-package-manager.outputs.manager }} ${{ steps.detect-package-manager.outputs.command }}
       - name: Build
