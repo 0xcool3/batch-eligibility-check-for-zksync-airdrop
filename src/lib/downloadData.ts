@@ -1,10 +1,7 @@
-import { bytesToString } from "viem";
-import * as Papa from "papaparse";
-// import Dexie, { type EntityTable } from "dexie";
-import { db } from "@/lib/db";
-import { delay } from "@/lib/delay";
-import { spawn, Thread, Worker } from "threads";
+// @ts-ignore
+import { spawn } from "threads";
 import worker from "@/workers/bulkput.worker?worker";
+import myfetchworker from "@/workers/myfetch.worker?worker";
 export const downloadData = async () => {
   const response = await fetch("/eligibility_list.csv");
   const csvString = await response.text();
@@ -12,80 +9,28 @@ export const downloadData = async () => {
 };
 
 export async function startDownload(url: string, updateProgress: Function) {
-  console.log("before startDownload");
-  const response = await fetch(url);
-  console.log("after startDownload");
-  const reader = response.body?.getReader();
-  const contentLength = +response!.headers!.get("Content-Length")!;
-  console.log({ contentLength });
-
-  let receivedLength = 0;
-  let chunks = [];
-
-  while (true) {
-    const { done, value } = await reader!.read();
-
-    if (done) {
-      break;
-    }
-
-    chunks.push(value);
-    receivedLength += value.length;
-
-    updateProgress(
-      receivedLength,
-      contentLength,
-      "Downloading eligibility_list.csv...",
-    );
-  }
-  updateProgress(
-    contentLength,
-    contentLength,
-    "Downloading eligibility_list.csv...",
-  );
-  console.log("downloaded");
-
-  const chunksAll = new Uint8Array(receivedLength);
-  let position = 0;
-
-  for (let chunk of chunks) {
-    chunksAll.set(chunk, position);
-    position += chunk.length;
-  }
-  const csvString = bytesToString(chunksAll);
-
-  const results: any = Papa.parse(csvString);
-
-  const items: { id: any; tokenAmount: any }[] = [];
-
-  for (var i = 1; i < results.data.length; ++i) {
-    items.push({
-      id: results.data[i][0],
-      tokenAmount: results.data[i][1],
-    });
-  }
-
-  await delay(1000);
-
-  console.log("lenght", items.length);
   try {
+    console.log("start myfetch");
+    const myfetch = await spawn(new myfetchworker());
+
+    const myfetchPromise = new Promise((resolve, _) => {
+      myfetch(url).subscribe((result: any) => {
+        updateProgress(
+          result.processed,
+          result.total,
+          "Downloading eligibility_list.csv...",
+        );
+        if (result.processed >= result.total) {
+          resolve(result.items);
+        }
+      });
+    });
+
+    const items = await myfetchPromise;
+    console.log("end myfetch");
     console.log("start bulkadd");
-
-    // let seconds = 0;
-    // const intvl = setInterval(() => {
-    //   seconds++;
-    //   if (seconds >= 120) {
-    //     updateProgress(120, 120, "Indexing eligibility_list ...");
-    //   } else {
-    //     updateProgress(seconds, 120, "Indexing eligibility_list ...");
-    //   }
-    // }, 1000);
-
-    // await delay(1000);
-
     const bulkPut = await spawn(new worker());
-
-    const newPromise = new Promise((resolve, reject) => {
+    const newPromise = new Promise((resolve, _) => {
       bulkPut(items).subscribe((result: any) => {
         updateProgress(
           result.processed,
@@ -99,10 +44,6 @@ export async function startDownload(url: string, updateProgress: Function) {
     });
 
     await newPromise;
-
-    // await db.eligibility_list.bulkPut(items);
-    // clearInterval(intvl);
-    // updateProgress(120, 120, "Indexing eligibility_list ...");
     console.log("after bulkadd");
   } catch (e) {
     console.log("put", e);
