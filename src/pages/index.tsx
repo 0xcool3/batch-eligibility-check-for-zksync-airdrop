@@ -1,25 +1,17 @@
 import React from "react";
-// import { Link } from "@nextui-org/link";
-// import { Snippet } from "@nextui-org/snippet";
-// import { Code } from "@nextui-org/code";
-// import { button as buttonStyles } from "@nextui-org/theme";
 import { Button } from "@nextui-org/button";
 import { Spacer } from "@nextui-org/spacer";
 import { Textarea } from "@nextui-org/input";
-// import { siteConfig } from "@/config/site";
 import { title, subtitle } from "@/components/primitives";
-// import { GithubIcon } from "@/components/icons";
 import DefaultLayout from "@/layouts/default";
 import SearchResult from "@/components/SearchResult";
 import { checkEligible } from "@/lib/checkEligible";
 import { checkDBExisted } from "@/lib/checkDBExisted";
-// import { downloadData } from "@/lib/downloadData";
 import { startDownload } from "@/lib/downloadData";
 import { Progress } from "@nextui-org/react";
 import { Accordion, AccordionItem } from "@nextui-org/react";
 import { Icon } from "@iconify/react";
 import faqs from "@/components/faq";
-import { spawn, Thread, Worker } from "threads"
 
 export default function IndexPage() {
   const [btnBusy, setBtnBusy] = React.useState(false);
@@ -36,7 +28,7 @@ export default function IndexPage() {
       <section className="flex flex-col items-center justify-center gap-4 py-8 md:py-10">
         <div className="inline-block max-w-lg text-center justify-center">
           <h1 className={title()}>Batch eligibility check for &nbsp;</h1>
-          <h1 className={title({ color: "violet" })}> zkSync airdrop.&nbsp;</h1>
+          <h1 className={title({ color: "violet" })}>zkSync airdrop&nbsp;</h1>
           <br />
           <h1 className={title()}></h1>
           <h4 className={subtitle({ class: "mt-4" })}>
